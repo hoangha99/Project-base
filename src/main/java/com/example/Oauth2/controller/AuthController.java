@@ -3,11 +3,14 @@ package com.example.Oauth2.controller;
 import com.example.Oauth2.exception.BadRequestException;
 import com.example.Oauth2.model.AuthProvider;
 import com.example.Oauth2.model.User;
+import com.example.Oauth2.model.UserRole;
 import com.example.Oauth2.payload.ApiResponse;
 import com.example.Oauth2.payload.AuthResponse;
 import com.example.Oauth2.payload.LoginRequest;
 import com.example.Oauth2.payload.SignUpRequest;
+import com.example.Oauth2.repository.RoleRepository;
 import com.example.Oauth2.repository.UserRepository;
+import com.example.Oauth2.repository.UserRoleRepository;
 import com.example.Oauth2.security.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +34,12 @@ public class AuthController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    RoleRepository roleRepository;
+
+    @Autowired
+    UserRoleRepository userRoleRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -69,10 +78,15 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         User result = userRepository.save(user);
+        UserRole ul = new UserRole();
 
+        ul.setUser(user);
+        ul.setRole(roleRepository.getById(1l));
+        userRepository.save(user);
+        userRoleRepository.save(ul);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/user/me")
-                .buildAndExpand(result.getId()).toUri();
+                .buildAndExpand(result.getUserId()).toUri();
 
         return ResponseEntity.created(location)
                 .body(new ApiResponse(true, "User registered successfully@"));

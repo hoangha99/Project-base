@@ -6,40 +6,45 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "email")
-})
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "user_id")
+    private Long userId;
 
-    @Column(nullable = false)
+    @Column(name = "name",nullable = false)
     private String name;
 
     @Email
-    @Column(nullable = false)
+    @Column(name = "email",nullable = false)
     private String email;
 
+    @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(nullable = false)
+    @Column(name = "email_verified",nullable = false)
     private Boolean emailVerified = false;
 
     @JsonIgnore
+    @Column(name = "password")
     private String password;
 
     @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(name = "provider")
     private AuthProvider provider;
 
+    @Column(name = "provider_id")
     private String providerId;
 
-    // Getters and Setters (Omitted for brevity)
+    @OneToMany(mappedBy = "user",targetEntity = UserRole.class, cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    List<UserRole> userRoles;
 }

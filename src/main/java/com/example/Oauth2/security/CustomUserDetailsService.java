@@ -28,15 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found with email : " + email)
                 );
-
-        List<GrantedAuthority> grantList = new ArrayList<GrantedAuthority>();
-
-
-        GrantedAuthority authority = new SimpleGrantedAuthority("USER");
-        grantList.add(authority);
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getEmail(), //
-                user.getPassword(), grantList);
-        return userDetails;
+        return UserPrincipal.create(user);
     }
 
     @Transactional

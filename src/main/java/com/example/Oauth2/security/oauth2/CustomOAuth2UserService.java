@@ -3,8 +3,12 @@ package com.example.Oauth2.security.oauth2;
 
 import com.example.Oauth2.exception.OAuth2AuthenticationProcessingException;
 import com.example.Oauth2.model.AuthProvider;
+import com.example.Oauth2.model.Role;
 import com.example.Oauth2.model.User;
+import com.example.Oauth2.model.UserRole;
+import com.example.Oauth2.repository.RoleRepository;
 import com.example.Oauth2.repository.UserRepository;
+import com.example.Oauth2.repository.UserRoleRepository;
 import com.example.Oauth2.security.UserPrincipal;
 import com.example.Oauth2.security.oauth2.user.OAuth2UserInfo;
 import com.example.Oauth2.security.oauth2.user.OAuth2UserInfoFactory;
@@ -26,6 +30,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    RoleRepository roleRepository;
+
+    @Autowired
+    UserRoleRepository userRoleRepository;
+
     @Override
     public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(oAuth2UserRequest);
@@ -35,7 +45,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         } catch (AuthenticationException ex) {
             throw ex;
         } catch (Exception ex) {
-            // Throwing an instance of AuthenticationException will trigger the OAuth2AuthenticationFailureHandler
+            // OAuth2AuthenticationFailureHandler
             throw new InternalAuthenticationServiceException(ex.getMessage(), ex.getCause());
         }
     }
@@ -71,7 +81,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         user.setName(oAuth2UserInfo.getName());
         user.setEmail(oAuth2UserInfo.getEmail());
         user.setImageUrl(oAuth2UserInfo.getImageUrl());
-        return userRepository.save(user);
+
+        UserRole ul = new UserRole();
+
+        ul.setUser(user);
+        ul.setRole(roleRepository.getById(1l));
+        userRepository.save(user);
+        userRoleRepository.save(ul);
+        return user;
     }
 
     private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {
