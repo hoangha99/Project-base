@@ -12,7 +12,7 @@ spring:
           facebook:
             clientId: 1492511091107685
             clientSecret: 7a397f4f2ca865ab512d6b85314f4802
-            redirectUri: http://localhost:8080/login/oauth2/code/google
+            redirectUri: https://project-base-web.herokuapp.com/login/oauth2/code/google
             scope:
               - email
               - public_profile
