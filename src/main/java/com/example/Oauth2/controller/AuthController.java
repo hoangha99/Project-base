@@ -92,4 +92,9 @@ public class AuthController {
                 .body(new ApiResponse(true, "User registered successfully"));
     }
 
+    @GetMapping("/hello")
+    public String hello(){
+        return "hello";
+    }
+
 }
